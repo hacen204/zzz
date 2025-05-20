@@ -1,0 +1,35 @@
+def update_tab(path,tickers,flds,tickers_mapping,debut=None,last_date=None,dr='US'):
+
+    # t]function updates data up to yesterday closing
+
+
+    # updating some series stored in path
+    print(f"updating{path}")
+
+    today=pd.Timestamp.today()+pd.offsets.BDay(®,normalize=True)
+    df=pd.read_csv(path,index_col=0,parse_dates=True)
+
+    # last correct date in the data
+    # if none sets to day_before_yesterday
+    if last_date is not None:
+        #last_date=min(last_date,today-pd.offsets.BDay())
+        df=df.loc[:last_date]
+    else:
+        last_date=df.index[-2]
+        df=df.loc[:last_date]
+
+
+    debut=df.index[-1]+pd.offsets.Day()
+    end=today-pd.offsets.Day)
+
+    if debut>end:
+        print'nothing to update')
+        return None
+    update=blp.bah(tickers=tickers,flds=flds,
+                    start_date=debut,end_date=end,Per='D',calendarCodeOverride=cdr) # type: ignore
+
+    update=update.droplevel(level=1,axis=1)
+    update.columns=tickers_mapping.loc[update.columns]
+    df=pd.concat ( (df,update),axis=0)
+    df.index=df.index.to_series().apply(pd.to_datetime) # type: ignore
+    df.to_csv(path)
